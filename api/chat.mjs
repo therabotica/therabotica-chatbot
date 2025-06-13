@@ -1,4 +1,4 @@
-// /api/chat.js
+// /api/chat.js (or chat.mjs if you're using .mjs extension)
 
 export const config = {
   runtime: 'edge',
