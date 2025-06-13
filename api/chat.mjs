@@ -1,12 +1,12 @@
 export default async function handler(req, res) {
-  const { messages } = req.body;
+  const { messages } = await req.body;
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
@@ -15,11 +15,10 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    console.log("OpenAI response:", data); // 👈 ADD THIS LINE
-
-    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn’t generate a response.";
+    const reply = data.choices?.[0]?.message?.content || "Sorry, no response generated.";
     res.status(200).json({ reply });
   } catch (error) {
-    console.error("Error contacting OpenAI:", error); // 👈 LOG ERROR
+    console.error("OpenAI error:", error);
     res.status(500).json({ error: "Error contacting OpenAI" });
-  
+  }
+}
