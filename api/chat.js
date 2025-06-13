@@ -15,9 +15,11 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content;
+    console.log("OpenAI response:", data); // 👈 ADD THIS LINE
+
+    const reply = data.choices?.[0]?.message?.content || "Sorry, I couldn’t generate a response.";
     res.status(200).json({ reply });
   } catch (error) {
+    console.error("Error contacting OpenAI:", error); // 👈 LOG ERROR
     res.status(500).json({ error: "Error contacting OpenAI" });
-  }
-}
+  
