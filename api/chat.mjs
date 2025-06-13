@@ -1,24 +1,29 @@
-export default async function handler(req, res) {
-  const { messages } = await req.body;
+// /api/chat.js
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages,
-      }),
-    });
+export const config = {
+  runtime: 'edge',
+};
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Sorry, no response generated.";
-    res.status(200).json({ reply });
-  } catch (error) {
-    console.error("OpenAI error:", error);
-    res.status(500).json({ error: "Error contacting OpenAI" });
-  }
+export default async function handler(req) {
+  const { messages } = await req.json();
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages,
+      temperature: 0.7,
+    }),
+  });
+
+  const data = await response.json();
+  const message = data.choices?.[0]?.message?.content;
+
+  return new Response(JSON.stringify({ message }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 }
